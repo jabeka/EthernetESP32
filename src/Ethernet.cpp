@@ -73,7 +73,7 @@ int EthernetClass::begin(uint8_t *mac, unsigned long timeout)
   return hasIP();
 }
 
-void EthernetClass::begin(uint8_t *mac, IPAddress localIP, IPAddress dnsIP, IPAddress gatewayIP, IPAddress netmask)
+void EthernetClass::begin(uint8_t *mac, IPAddress localIP, IPAddress dnsIP, IPAddress gatewayIP, IPAddress netmask, bool server)
 {
 
   if (localIP.type() == IPv4)
@@ -95,7 +95,7 @@ void EthernetClass::begin(uint8_t *mac, IPAddress localIP, IPAddress dnsIP, IPAd
     }
   }
   //  if (config(localIP, gatewayIP, netmask, dnsIP) && beginETH(mac)) {
-  if (beginETH(mac) && config(localIP, gatewayIP, netmask, dnsIP))
+  if (beginETH(mac, server) && config(localIP, gatewayIP, netmask, dnsIP))
   {
     hwStatus = EthernetHardwareFound;
   }
@@ -111,9 +111,9 @@ int EthernetClass::begin(unsigned long timeout)
   return begin(nullptr, timeout);
 }
 
-void EthernetClass::begin(IPAddress ip, IPAddress dns, IPAddress gateway, IPAddress subnet)
+void EthernetClass::begin(IPAddress ip, IPAddress dns, IPAddress gateway, IPAddress subnet, bool server)
 {
-  begin(nullptr, ip, dns, gateway, subnet);
+  begin(nullptr, ip, dns, gateway, subnet, server);
 }
 
 int EthernetClass::maintain()
@@ -215,7 +215,7 @@ size_t EthernetClass::printDriverInfo(Print &out) const
   return 0;
 }
 
-bool EthernetClass::beginETH(uint8_t *macAddrP)
+bool EthernetClass::beginETH(uint8_t *macAddrP, bool server)
 {
   esp_err_t ret = ESP_OK;
 
@@ -301,8 +301,11 @@ bool EthernetClass::beginETH(uint8_t *macAddrP)
     esp_netif_config.route_prio -= index * 5;
   }
 
-  esp_netif_config.flags = (esp_netif_flags_t)(esp_netif_config.flags & (~ESP_NETIF_DHCP_CLIENT));
-  esp_netif_config.flags = (esp_netif_flags_t)(esp_netif_config.flags | ESP_NETIF_DHCP_SERVER);
+  if (server)
+  {
+    esp_netif_config.flags = (esp_netif_flags_t)(esp_netif_config.flags & (~ESP_NETIF_DHCP_CLIENT));
+    esp_netif_config.flags = (esp_netif_flags_t)(esp_netif_config.flags | ESP_NETIF_DHCP_SERVER);
+  }
 
   cfg.base = &esp_netif_config;
   _esp_netif = esp_netif_new(&cfg);

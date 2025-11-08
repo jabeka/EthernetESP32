@@ -42,10 +42,10 @@ public:
   void init(EthDriver& ethDriver);
 
   int begin(uint8_t *mac, unsigned long timeout = 60000);
-  void begin(uint8_t *mac, IPAddress ip, IPAddress dns = INADDR_NONE, IPAddress gateway = INADDR_NONE, IPAddress subnet = INADDR_NONE);
+  void begin(uint8_t *mac, IPAddress ip, IPAddress dns = INADDR_NONE, IPAddress gateway = INADDR_NONE, IPAddress subnet = INADDR_NONE, bool server = false);
 
   int begin(unsigned long timeout = 60000);
-  void begin(IPAddress ip, IPAddress dns = INADDR_NONE, IPAddress gateway = INADDR_NONE, IPAddress subnet = INADDR_NONE);
+  void begin(IPAddress ip, IPAddress dns = INADDR_NONE, IPAddress gateway = INADDR_NONE, IPAddress subnet = INADDR_NONE, bool server = false);
 
   void end();
   int maintain();
@@ -81,7 +81,7 @@ protected:
 
   EthernetHardwareStatus hwStatus = EthernetNoHardware;
 
-  bool beginETH(uint8_t *mac);
+  bool beginETH(uint8_t *mact, bool server = false);
 };
 
 extern EthernetClass Ethernet;
