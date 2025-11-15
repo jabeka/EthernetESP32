@@ -84,7 +84,7 @@ void EthernetClass::begin(uint8_t *mac, IPAddress localIP, IPAddress dnsIP, IPAd
       dnsIP = localIP;
       dnsIP[3] = 1;
     }
-    if (gatewayIP == INADDR_NONE)
+    if (!server && gatewayIP == INADDR_NONE)
     {
       gatewayIP = localIP;
       gatewayIP[3] = 1;
@@ -305,6 +305,7 @@ bool EthernetClass::beginETH(uint8_t *macAddrP, bool server)
   {
     esp_netif_config.flags = (esp_netif_flags_t)(esp_netif_config.flags & (~ESP_NETIF_DHCP_CLIENT));
     esp_netif_config.flags = (esp_netif_flags_t)(esp_netif_config.flags | ESP_NETIF_DHCP_SERVER);
+    esp_netif_config.flags = (esp_netif_flags_t)(esp_netif_config.flags | ESP_NETIF_FLAG_AUTOUP);
   }
 
   cfg.base = &esp_netif_config;
